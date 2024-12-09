@@ -25,19 +25,27 @@ def generate_heatmap(dataset_name, df):
     # Calculate correlation and generate heatmap
     plt.figure(figsize=(10, 8))
     correlation_matrix = numeric_df.corr()
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
+    plt.title(f"Correlation Heatmap for {dataset_name}", fontsize=16)
+    plt.xlabel("Features", fontsize=12)
+    plt.ylabel("Features", fontsize=12)
     heatmap_filename = f"{directory}/heatmap.png"
     plt.savefig(heatmap_filename)
     plt.close()
     print(f"Heatmap saved as {heatmap_filename}")
 
 # Function to generate narrative from the dataset analysis
-def generate_narrative(dataset_name, summary):
+def generate_narrative(dataset_name, summary, heatmap_filename):
     try:
+        # Crafting a more detailed prompt to provide context
+        prompt = f"Please analyze the following dataset and its correlations:\n\n{summary}\n\n" \
+                 f"Additionally, please refer to the heatmap saved at {heatmap_filename} for any visual insights. " \
+                 f"Provide a detailed narrative including insights from the dataset, trends, and any correlations of importance."
+        
         response = openai.Completion.create(
             model="gpt-3.5-turbo",
-            prompt=f"Summarize the following dataset analysis for {dataset_name}:\n{summary}",
-            max_tokens=150
+            prompt=prompt,
+            max_tokens=300
         )
         narrative = response.choices[0].text.strip()
         print("Generated Story:\n", narrative)
@@ -66,7 +74,8 @@ def analyze_dataset(dataset_name, dataset_path):
     
     # Generate the narrative
     summary = f"Dataset Shape: {df.shape}, Columns: {list(df.columns)}, Missing Values: {df.isnull().sum().to_dict()}, Summary Statistics: {df.describe().to_dict()}"
-    generate_narrative(dataset_name, summary)
+    heatmap_filename = f"/content/{dataset_name}/heatmap.png"
+    generate_narrative(dataset_name, summary, heatmap_filename)
 
 # Main function to run the analysis
 def main():
@@ -81,5 +90,5 @@ def main():
         print(f"\nAnalyzing {dataset_name} dataset...")
         analyze_dataset(dataset_name, dataset_path)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
