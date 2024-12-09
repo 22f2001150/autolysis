@@ -6,8 +6,8 @@ To generate heatmaps and analyze your data, follow the steps below:
    Clone the repository to your local system using the following command:
 
    ```bash
-   git clone https://github.com/your-username/your-repository-name.git
-   cd your-repository-name
+   git clone https://github.com/22f2001150/autolysis.git
+   cd autolysis
 2. **Install Required Libraries: Ensure that all dependencies are installed by running:**
 
     pip install -r requirements.txt
